@@ -24,7 +24,7 @@ def findCommonTracks(filenames):
 
         # write to file 
         if len(commonTracks) > 0:
-            f = open("common.txt", "w")
+            f = open("common.txt", "wb")
             for val in commonTracks:
                 s = "%s\n" % val
                 f.write(s.encode("UTF-8"))
