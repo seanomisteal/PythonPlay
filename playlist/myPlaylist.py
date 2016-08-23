@@ -2,9 +2,32 @@ import plistlib
 
 
 def main():
-    # findDuplicates("test-data\maya.xml")
-    filenames = ("test-data\pl1.xml", "test-data\pl2.xml")
-    findCommonTracks(filenames)
+    filename = "test-data\maya.xml"
+    #findDuplicates(filename)
+    #filenames = ("test-data\pl1.xml", "test-data\pl2.xml")
+    #findCommonTracks(filenames)
+    filename = "test-data\mymusic.xml"
+    plotStats(filename)
+
+def plotStats(filename):
+    # read in a playlist
+    plist = plistlib.readPlist(filename)
+    # get the tracks from the playlist
+    tracks = plist['Tracks']
+    # create list of song ratings and track durations
+    ratings = []
+    durations = []
+    # iterate through the tracks
+    for trackId, track in tracks.items():
+        try:
+            ratings.append(track['Album Rating'])
+            durations.append(track['Total Time'])
+        except:
+            pass
+    # ensure that valid data was collected 
+    if ratings == [] or durations == []:
+        print("No valid Album Rating/Duration data in %s." % filename)
+        return
 
 def findCommonTracks(filenames):
     trackNameSets = []
@@ -19,19 +42,19 @@ def findCommonTracks(filenames):
                 pass
         trackNameSets.append(trackNames)
 
-        # get the set of common tracks
-        commonTracks = set.intersection(*trackNameSets)
+    # get the set of common tracks
+    commonTracks = set.intersection(*trackNameSets)
 
-        # write to file 
-        if len(commonTracks) > 0:
-            f = open("common.txt", "wb")
-            for val in commonTracks:
-                s = "%s\n" % val
-                f.write(s.encode("UTF-8"))
-            f.close()
-            print("%d common tracks found" % len(commonTracks))
-        else:
-            print("No common tracks!")
+    # write to file 
+    if len(commonTracks) > 0:
+        f = open("common.txt", "wb")
+        for val in commonTracks:
+            s = "%s\n" % val
+            f.write(s.encode("UTF-8"))
+        f.close()
+        print("%d common tracks found" % len(commonTracks))
+    else:
+        print("No common tracks!")
 
 def findDuplicates(filename):
     print('Finding duplicate tracks in %s...' % filename)
@@ -46,22 +69,19 @@ def findDuplicates(filename):
         try:
             name = track['Name']
             duration = track['Total Time']
-            # look for existing entries
-            if name in trackNames:
-                if duration//1000 == trackNames[name][0]//1000:
-                    count = trackNames[name][1]
-                    trackNames[name] = (duration, count+1)
+
+            if (name, duration//1000) in trackNames:
+                count = trackNames[(name, duration//1000)]
+                trackNames[(name, duration//1000)] = count+1
             else:
-                # add dictionary entry as tuple (duration, count)
-                trackNames[name] = (duration,1)
+                trackNames[(name, duration//1000)] = 1
         except:
-            # ignore
             pass
 
     dups = []
     for k, v in trackNames.items():
-        if v[1] > 1:
-            dups.append((v[1], k))
+        if v > 1:
+            dups.append((v, k))
     # save duplicates to a file 
     if len(dups) > 0:
         print("Found %d duplicates. Track names saved to dup.txt" % len(dups))
