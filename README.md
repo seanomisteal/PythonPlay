@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ![Python Playground](cover.png)
 
 Code for all the projects in the book Python Playground published by
@@ -21,3 +22,6 @@ The source code is published here as per the MIT License below:
 
 
 
+=======
+# PythonPlay
+>>>>>>> 1f79e1ac38b00aa3850222e19ffdb3b6a01da624
